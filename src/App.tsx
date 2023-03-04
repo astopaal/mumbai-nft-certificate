@@ -11,19 +11,18 @@ declare global {
 
 function App() {
   const [ogrenciNo, setOgrenciNo] = useState("");
-  const [gano, setGano] = useState("");
+  const [ready, setReady] = useState(false);
 
-  const contractAddress = "0x6b945A880A143A07D6a27c9e6b92f3E65Ca51f6A";
+  const contractAddress = "0x153670F13e8104B9395BF6FDfe8F2F12293d4497";
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const contract = new ethers.Contract(contractAddress, abi, signer);
 
-  const createNft = async (
-    mezun_adi: string,
-    belge_turu: string,
-    ogrenci_no: string,
-    gano: string
-  ) => {
+  const createCertificate = () => {
+    return null;
+  };
+
+  const createNft = async (ogrenci_no: number) => {
     try {
       // Kullanıcının bağlı MetaMask cüzdanını kontrol et
       if (!window.ethereum) {
@@ -32,15 +31,9 @@ function App() {
 
       // MetaMask cüzdanına bağlan
       await window.ethereum.request({ method: "eth_requestAccounts" });
-
+      console.log("cevrilmis ogrno : ", ogrenciNo);
       // Kullanıcıya transaction'ı onaylat
-      const transaction = await contract.createNFT(
-        mezun_adi,
-        belge_turu,
-        ogrenci_no,
-        gano,
-        { gasPrice: ethers.utils.parseUnits("5", "gwei") }
-      );
+      const transaction = await contract.createNFT(ogrenci_no);
 
       const tx = await signer.sendTransaction(transaction);
 
@@ -65,23 +58,27 @@ function App() {
           className="ogr-no m-2 p-4 bg-[#242424] border rounded"
           placeholder="Öğrenci no..."
         />
-        <input
-          type="text"
-          onChange={(e) => {
-            setGano(e.target.value);
-          }}
-          className="gano m-2 p-4 bg-[#242424] border rounded"
-          placeholder="Gano..."
-        />
       </div>
-      <button
-        className="create-nft mt-20 text-lg border-2 border-yellow-500 max-w-sm p-5 rounded hover:scale-110 hover:bg-yellow-500 hover:border-white hover:text-black transition duration-700 hover:border-2"
-        onClick={() => {
-          createNft("Samet Topal", "Başarı Belgesi", ogrenciNo, gano);
-        }}
-      >
-        Connect Wallet And Mint
-      </button>
+      {ready && (
+        <button
+          className="create-nft mt-20 text-lg border-2 border-yellow-500 max-w-sm p-5 rounded hover:scale-110 hover:bg-yellow-500 hover:border-white hover:text-black transition duration-700 hover:border-2"
+          onClick={() => {
+            createNft(Number(ogrenciNo));
+          }}
+        >
+          Connect Wallet And Mint
+        </button>
+      )}
+      {!ready && (
+        <button
+          onClick={() => {
+            setReady(true);
+            createCertificate();
+          }}
+        >
+          Belge Oluştur
+        </button>
+      )}
     </div>
   );
 }
