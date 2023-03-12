@@ -13,7 +13,7 @@ function App() {
   const [ogrenciNo, setOgrenciNo] = useState("");
   const [ready, setReady] = useState(false);
 
-  const contractAddress = "0x153670F13e8104B9395BF6FDfe8F2F12293d4497";
+  const contractAddress = "0x6b945A880A143A07D6a27c9e6b92f3E65Ca51f6A";
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const contract = new ethers.Contract(contractAddress, abi, signer);
